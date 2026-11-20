@@ -1,1 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Operations & B2B Revenue Performance Dashboard — Earscure / Mir's Core</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#1B365D',
+              darkNavy: '#0F2942',
+              bg: '#F5F7FA',
+              teal: '#008080',
+              tealLight: '#0EA5E9',
+              emerald: '#10B981',
+              coral: '#E11D48',
+              amber: '#D97706',
+              border: '#E2E8F0'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'Segoe UI', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
 
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #F5F7FA;
+      color: #1F2937;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+    }
+    
+    /* Clean Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F5F7FA; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+    /* Card Elevation & Border Specs */
+    .dashboard-card {
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.04);
+      border-radius: 0.75rem;
+      transition: all 0.2s ease-in-out;
+    }
+    .dashboard-card:hover {
+      box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+    }
+
+    /* Active Bookmark Pill */
+    .bookmark-btn.active {
+      background-color: #1B365D;
+      color: #FFFFFF;
+      border-color: #1B365D;
+    }
+
+    /* Modal Backdrop */
+    .drawer-backdrop {
+      background-color: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased select-none">
+
+  <!-- 1. CORPORATE TOP HEADER -->
+  <header class="bg-[#1B365D] text-white border-b border-slate-700 shadow-sm sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Title & Branding -->
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white shadow-md">
+          <i class="fa-solid fa-chart-line text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white font-sans">
+              Financial Operations & B2B Revenue Performance Dashboard
+            </h1>
+            <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 rounded-full hidden sm:inline-flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Production Audit Mode
+            </span>
+          </div>
+          <div class="flex items-center space-x-2 text-xs text-slate-300 mt-0.5">
+            <span class="font-medium text-teal-300">Earscure / Mir's Core B2B Wholesale Operations</span>
+            <span>•</span>
+            <span class="text-slate-300">Last Updated: Nov 19, 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Header Portfolio Badges & Action Buttons -->
+      <div class="flex items-center space-x-2.5">
+        <!-- Dataset Disclaimer Badge -->
+        <div class="hidden lg:flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800/80 border border-slate-700 text-[11px] text-slate-300">
+          <i class="fa-solid fa-database text-teal-400"></i>
+          <span>Sample / Portfolio Dataset • Cleaned via SQL & Excel</span>
+        </div>
+
+        <!-- Portfolio Case Study Button -->
+        <button onclick="toggleCaseStudyModal()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-semibold text-xs transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-file-contract text-teal-400"></i>
+          <span>Case Study (Problem → Result)</span>
+        </button>
+
+        <!-- Copy GitHub Code Modal -->
+        <button onclick="openGitHubModal()" class="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-brands fa-github text-sm"></i>
+          <span>GitHub Code</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- 2. TOP SLICER BAR & BOOKMARK VIEW PRESETS -->
+  <section class="bg-white border-b border-slate-200 px-4 sm:px-6 py-3 shadow-xs">
+    <div class="max-w-7xl mx-auto flex flex-col space-y-3">
+      
+      <!-- Top Row: Bookmark Views & Slicer Header -->
+      <div class="flex flex-wrap justify-between items-center gap-2">
+        <!-- Bookmark Views -->
+        <div class="flex items-center space-x-2">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+            <i class="fa-solid fa-bookmark text-brand-navy"></i> Views:
+          </span>
+          <button onclick="applyBookmark('exec')" id="bm-exec" class="bookmark-btn active px-3 py-1 rounded-md text-xs font-semibold border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100 transition">
+            Executive Summary
+          </button>
+          <button onclick="applyBookmark('variance')" id="bm-variance" class="bookmark-btn px-3 py-1 rounded-md text-xs font-semibold border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100 transition">
+            Variance & Audit Focus
+          </button>
+          <button onclick="applyBookmark('fulfillment')" id="bm-fulfillment" class="bookmark-btn px-3 py-1 rounded-md text-xs font-semibold border border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100 transition">
+            Client Fulfillment
+          </button>
+        </div>
+
+        <!-- Filter Count Badge & Reset -->
+        <div class="flex items-center space-x-3 text-xs">
+          <span class="text-slate-500 font-medium" id="slicer-summary-text">Showing: All Periods • All Regions • All Product Categories</span>
+          <button onclick="resetSlicers()" class="text-brand-navy hover:text-teal-600 font-semibold flex items-center gap-1 transition">
+            <i class="fa-solid fa-rotate-right text-[10px]"></i> Reset Slicers
+          </button>
+        </div>
+      </div>
+
+      <!-- Slicer Select Controls Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+        
+        <!-- Slicer 1: Date Range -->
+        <div class="flex flex-col space-y-1">
+          <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+            <span>Date Range Slicer</span>
+            <i class="fa-regular fa-calendar text-slate-400"></i>
+          </label>
+          <select id="slicer-date" onchange="onSlicerChange()" class="bg-slate-50 border border-slate-300 focus:border-brand-navy focus:bg-white text-slate-800 text-xs rounded-lg px-3 py-2 focus:outline-none font-medium cursor-pointer transition">
+            <option value="all">FY 2026 Full Year</option>
+            <option value="Q1">Q1 2026 (Jan – Mar)</option>
+            <option value="Q2">Q2 2026 (Apr – Jun)</option>
+            <option value="Q3">Q3 2026 (Jul – Sep)</option>
+            <option value="Q4">Q4 2026 (Oct – Dec Forecast)</option>
+          </select>
+        </div>
+
+        <!-- Slicer 2: Region / Export Market -->
+        <div class="flex flex-col space-y-1">
+          <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+            <span>Export Market Slicer</span>
+            <i class="fa-solid fa-earth-americas text-slate-400"></i>
+          </label>
+          <select id="slicer-region" onchange="onSlicerChange()" class="bg-slate-50 border border-slate-300 focus:border-brand-navy focus:bg-white text-slate-800 text-xs rounded-lg px-3 py-2 focus:outline-none font-medium cursor-pointer transition">
+            <option value="all">All Export Markets</option>
+            <option value="UAE & GCC">UAE & GCC (Dubai, KSA, Qatar, Kuwait)</option>
+            <option value="UK & Europe">UK & Europe B2B Boutiques</option>
+            <option value="North America">North America (USA & Canada)</option>
+            <option value="Pakistan Domestic">Pakistan Domestic Wholesale</option>
+          </select>
+        </div>
+
+        <!-- Slicer 3: Product Category -->
+        <div class="flex flex-col space-y-1">
+          <label class="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center justify-between">
+            <span>Product Category Slicer</span>
+            <i class="fa-solid fa-boxes-stacked text-slate-400"></i>
+          </label>
+          <select id="slicer-category" onchange="onSlicerChange()" class="bg-slate-50 border border-slate-300 focus:border-brand-navy focus:bg-white text-slate-800 text-xs rounded-lg px-3 py-2 focus:outline-none font-medium cursor-pointer transition">
+            <option value="all">All Product Lines</option>
+            <option value="Luxury Abayas">Luxury Abayas</option>
+            <option value="Royal Kaftans">Royal Kaftans</option>
+            <option value="Evening Robes">Evening Robes & Capes</option>
+            <option value="Gold-Zari Couture">Gold-Zari Couture Edition</option>
+          </select>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. MAIN DASHBOARD CONTENT CANVAS -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- TOP KPI CARDS ROW (4 MUST-HAVE NUMERIC CARDS) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <!-- KPI CARD 1: Total Processed Revenue -->
+      <div class="dashboard-card p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Processed Revenue</span>
+          <span id="kpi-rev-badge" class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full flex items-center gap-1">
+            <i class="fa-solid fa-arrow-trend-up"></i> +8.4%
+          </span>
+        </div>
+        <div class="my-3">
+          <div id="kpi-rev-val" class="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">$482,500</div>
+          <div id="kpi-rev-sub" class="text-xs text-slate-500 mt-1">Target Budget: $445,000</div>
+        </div>
+        <div class="h-8 w-full pt-1">
+          <svg class="w-full h-full stroke-teal-600 fill-teal-500/10" viewBox="0 0 100 25">
+            <path d="M0 22 Q 25 15, 50 18 T 75 8 T 100 3 L 100 25 L 0 25 Z" stroke-width="0" />
+            <path d="M0 22 Q 25 15, 50 18 T 75 8 T 100 3" stroke-width="2" fill="none" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- KPI CARD 2: Budget vs. Actual Variance % -->
+      <div class="dashboard-card p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Budget Variance %</span>
+          <span id="kpi-var-status" class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+            Favorable
+          </span>
+        </div>
+        <div class="my-3">
+          <div id="kpi-var-val" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight">+8.42%</div>
+          <div id="kpi-var-sub" class="text-xs text-slate-500 mt-1">+$37,500 Above Forecast</div>
+        </div>
+        <div class="h-8 w-full pt-1 flex items-end">
+          <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200">
+            <div id="kpi-var-bar" class="bg-emerald-500 h-full rounded-full" style="width: 78%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI CARD 3: Reconciliation Accuracy % -->
+      <div class="dashboard-card p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Reconciliation Accuracy</span>
+          <span class="px-2 py-0.5 text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200 rounded-full">
+            SQL Automated
+          </span>
+        </div>
+        <div class="my-3">
+          <div id="kpi-acc-val" class="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">99.64%</div>
+          <div id="kpi-acc-sub" class="text-xs text-slate-500 mt-1">Error Rate: 0.36% (1 Audit Flag)</div>
+        </div>
+        <div class="h-8 w-full pt-1 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100">
+          <span>Match Rule: Star Schema</span>
+          <span class="text-teal-700 font-semibold"><i class="fa-solid fa-check-double text-teal-600"></i> Verified</span>
+        </div>
+      </div>
+
+      <!-- KPI CARD 4: Avg Turnaround Time & Automation Savings -->
+      <div class="dashboard-card p-4 flex flex-col justify-between relative overflow-hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Avg Turnaround Time</span>
+          <span class="px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
+            -38% Cycle
+          </span>
+        </div>
+        <div class="my-3">
+          <div id="kpi-tat-val" class="text-2xl sm:text-3xl font-extrabold text-brand-navy tracking-tight">4.2 Days</div>
+          <div id="kpi-tat-sub" class="text-xs text-slate-500 mt-1">Reduced from 6.8 Days Baseline</div>
+        </div>
+        <div class="h-8 w-full pt-1 flex items-center justify-between text-xs text-slate-500 border-t border-slate-100">
+          <span>Automation Savings:</span>
+          <span class="font-bold text-emerald-700">~14.5 Hours/Wk</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 4 CORE VISUAL CHARTS (2x2 GRID) -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+      <!-- VISUAL 1: Monthly Processed Revenue & Volume Trend (Line/Area) -->
+      <div class="dashboard-card p-5 flex flex-col min-h-[340px]">
+        <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-brand-navy flex items-center gap-2">
+              <i class="fa-solid fa-chart-area text-teal-600"></i>
+              Monthly Revenue & Invoice Volume Trend
+            </h3>
+            <p class="text-xs text-slate-500">Actual processed revenue ($) vs monthly invoice transaction count</p>
+          </div>
+          <div class="flex items-center space-x-3 text-xs">
+            <span class="flex items-center gap-1 font-medium text-slate-600"><span class="w-3 h-1 bg-brand-navy rounded"></span> Revenue</span>
+            <span class="flex items-center gap-1 font-medium text-slate-600"><span class="w-3 h-1 bg-teal-500 rounded"></span> Invoices</span>
+          </div>
+        </div>
+        <div class="flex-1 w-full relative min-h-[240px]">
+          <canvas id="chart-trend"></canvas>
+        </div>
+      </div>
+
+      <!-- VISUAL 2: Export Market Revenue & Margin Comparison (Horizontal Bar) -->
+      <div class="dashboard-card p-5 flex flex-col min-h-[340px]">
+        <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-brand-navy flex items-center gap-2">
+              <i class="fa-solid fa-chart-bar text-teal-600"></i>
+              Export Market & Segment Performance
+            </h3>
+            <p class="text-xs text-slate-500">Total B2B revenue contribution by geographical export market ($)</p>
+          </div>
+          <span class="text-xs text-slate-400 font-mono">Sorted by Value</span>
+        </div>
+        <div class="flex-1 w-full relative min-h-[240px]">
+          <canvas id="chart-markets"></canvas>
+        </div>
+      </div>
+
+      <!-- VISUAL 3: Actual vs Budget Revenue by Category (Combo Chart) -->
+      <div class="dashboard-card p-5 flex flex-col min-h-[340px]">
+        <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-brand-navy flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-teal-600"></i>
+              Actual vs. Budget Revenue by Product Line
+            </h3>
+            <p class="text-xs text-slate-500">Comparing actual performance against budget targets with variance markers</p>
+          </div>
+          <div class="flex items-center space-x-3 text-xs">
+            <span class="flex items-center gap-1 font-medium text-slate-600"><span class="w-2.5 h-2.5 bg-brand-navy rounded"></span> Actual</span>
+            <span class="flex items-center gap-1 font-medium text-slate-600"><span class="w-2.5 h-2.5 bg-slate-300 rounded"></span> Budget Target</span>
+          </div>
+        </div>
+        <div class="flex-1 w-full relative min-h-[240px]">
+          <canvas id="chart-variance"></canvas>
+        </div>
+      </div>
+
+      <!-- VISUAL 4: Order Fulfillment & Reconciliation Status (Doughnut) -->
+      <div class="dashboard-card p-5 flex flex-col min-h-[340px]">
+        <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-brand-navy flex items-center gap-2">
+              <i class="fa-solid fa-chart-pie text-teal-600"></i>
+              Order Reconciliation & Verification Status
+            </h3>
+            <p class="text-xs text-slate-500">SQL automated invoice matching vs custom audit check statuses</p>
+          </div>
+          <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+            99.6% Accuracy
+          </span>
+        </div>
+        <div class="flex-1 w-full relative min-h-[240px] flex items-center justify-center">
+          <canvas id="chart-status"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DETAIL SUMMARY MATRIX TABLE & DRILL-THROUGH SECTION -->
+    <div class="dashboard-card p-5 flex flex-col">
+      
+      <!-- Table Header & Toolbar -->
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+        <div>
+          <h3 class="text-base font-bold text-brand-navy flex items-center gap-2">
+            <i class="fa-solid fa-table-list text-teal-600"></i>
+            Wholesale Client Ledger & Variance Detail Matrix
+          </h3>
+          <p class="text-xs text-slate-500">Click any client row for instant invoice-level audit drill-through details</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Table Search Input -->
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-slate-400"></i>
+            <input type="text" id="table-search" oninput="renderTable()" placeholder="Search client, region or category..." class="bg-slate-50 border border-slate-300 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-700 focus:outline-none focus:border-brand-navy focus:bg-white w-56 transition" />
+          </div>
+
+          <!-- Export CSV -->
+          <button onclick="exportCSV()" class="px-3 py-1.5 bg-white border border-slate-300 hover:border-slate-400 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs">
+            <i class="fa-solid fa-file-csv text-emerald-600"></i> Export CSV
+          </button>
+        </div>
+      </div>
+
+      <!-- Ledger Table -->
+      <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="w-full text-left text-xs text-slate-700">
+          <thead class="bg-slate-100/80 text-slate-600 uppercase font-bold border-b border-slate-200 text-[11px] tracking-wider">
+            <tr>
+              <th class="py-3 px-4 cursor-pointer hover:text-brand-navy" onclick="sortTable('client')">Boutique Partner <i class="fa-solid fa-sort text-[10px]"></i></th>
+              <th class="py-3 px-4">Category</th>
+              <th class="py-3 px-4">Export Region</th>
+              <th class="py-3 px-4 text-right cursor-pointer hover:text-brand-navy" onclick="sortTable('target')">Budget Target ($) <i class="fa-solid fa-sort text-[10px]"></i></th>
+              <th class="py-3 px-4 text-right cursor-pointer hover:text-brand-navy" onclick="sortTable('actual')">Actual Processed ($) <i class="fa-solid fa-sort text-[10px]"></i></th>
+              <th class="py-3 px-4 text-right cursor-pointer hover:text-brand-navy" onclick="sortTable('variance')">Variance % <i class="fa-solid fa-sort text-[10px]"></i></th>
+              <th class="py-3 px-4 text-center">Accuracy %</th>
+              <th class="py-3 px-4 text-center">Reconciliation Status</th>
+              <th class="py-3 px-4 text-center">Audit Action</th>
+            </tr>
+          </thead>
+          <tbody id="matrix-tbody" class="divide-y divide-slate-100 bg-white">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer Table Summary Stats -->
+      <div class="mt-3 pt-3 border-t border-slate-200 flex flex-wrap justify-between items-center text-xs text-slate-500 gap-2">
+        <div class="flex items-center space-x-4">
+          <span>Active Accounts: <strong class="text-slate-800 font-bold" id="tbl-count">16</strong></span>
+          <span>Aggregated Actual Revenue: <strong class="text-brand-navy font-bold" id="tbl-total-actual">$482,500</strong></span>
+        </div>
+        <div class="flex items-center space-x-3 text-[11px]">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Favorable (&gt;0%)</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-brand-coral"></span> Unfavorable (&lt;0%)</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PORTFOLIO CASE STUDY SECTION (PROBLEM → ACTION → RESULT) -->
+    <section class="dashboard-card p-6 bg-gradient-to-br from-white to-slate-50 border border-slate-200">
+      <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-3">
+          <div class="w-8 h-8 rounded-lg bg-brand-navy text-teal-300 flex items-center justify-center font-bold">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div>
+            <h2 class="text-base font-bold text-brand-navy">Portfolio Case Study: Financial Operations & Automation Architecture</h2>
+            <p class="text-xs text-slate-500">Methodology, ETL Data Pipeline & Strategic Executive Outcomes</p>
+          </div>
+        </div>
+        <span class="px-2.5 py-1 text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200 rounded-md">
+          SQL + Excel + Power BI Pipeline
+        </span>
+      </div>
+
+      <!-- 3-Column Structured Layout (Problem, Action, Result) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <!-- Pillar 1: The Problem -->
+        <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-brand-coral uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-triangle-exclamation"></i> 1. The Challenge
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">Baseline Lag</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1.5">Fragmented B2B Data & Audit Lags</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Earscure / Mir's Core B2B wholesale orders were logged across fragmented WhatsApp chats and unstandardized Excel sheets, leading to a <strong>6.8-day invoice reconciliation cycle</strong> and frequent currency/tax variance errors.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span>Reconciliation Risk:</span>
+            <span class="font-bold text-brand-coral">High Error Rate</span>
+          </div>
+        </div>
+
+        <!-- Pillar 2: The Action Taken -->
+        <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-brand-navy uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-gears"></i> 2. The Solution
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">SQL Star Schema</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1.5">ETL Data Cleaning & Modeling</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Standardized raw data using SQL cleaning scripts, established a star-schema data model in Power BI/Excel, and implemented automated variance verification rules for custom vs standard wholesale orders.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span>Data Pipeline:</span>
+            <span class="font-bold text-brand-navy">Automated Matching</span>
+          </div>
+        </div>
+
+        <!-- Pillar 3: The Result -->
+        <div class="bg-white p-4 rounded-lg border border-slate-200 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-check"></i> 3. The Impact
+              </span>
+              <span class="text-[10px] font-mono text-slate-400">Verified ROI</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800 mb-1.5">99.6% Accuracy & 38% Speedup</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Achieved <strong>99.64% invoice reconciliation accuracy</strong>, slashed processing turnaround time to <strong>4.2 days</strong>, and gave executive leadership instant visibility into export profit margins.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span>Time Saved:</span>
+            <span class="font-bold text-emerald-600">~14.5 Hours/Week</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Dataset Disclaimer Note -->
+      <div class="mt-4 pt-3 border-t border-slate-200 text-center text-xs text-slate-500">
+        <i class="fa-solid fa-circle-info text-teal-600 mr-1"></i>
+        <span><strong>Portfolio Dataset Disclaimer:</strong> All financial values and metrics shown represent a structured, anonymized <em>Sample Dataset</em> specifically modeled to demonstrate corporate data engineering and Power BI dashboard capabilities for Earscure / Mir's Core.</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- CORPORATE FOOTER STATUS BAR -->
+  <footer class="bg-white border-t border-slate-200 px-4 sm:px-6 py-3 text-xs text-slate-500 shadow-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center space-x-3">
+        <span class="font-bold text-brand-navy">Earscure / Mir's Core B2B Analytics</span>
+        <span>•</span>
+        <span>Corporate Financial & Operations Reporting System</span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Status: <strong class="text-emerald-600">All Systems Operational</strong></span>
+        <span>Data Refresh: <strong class="text-slate-700">Real-Time Client Logic</strong></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- DRILL-THROUGH INVOICE AUDIT DRAWER (SLIDE-OVER) -->
+  <div id="drillthrough-drawer" class="fixed inset-0 z-50 overflow-hidden hidden">
+    <div class="absolute inset-0 drawer-backdrop transition-opacity" onclick="closeDrillthrough()"></div>
+    
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10">
+      <div class="w-screen max-w-lg bg-white shadow-2xl border-l border-slate-200 flex flex-col">
+        
+        <!-- Drawer Header -->
+        <div class="p-5 bg-[#1B365D] text-white flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-teal-300 uppercase tracking-wider">Invoice Audit Drill-Through</span>
+            <h2 id="drawer-client-name" class="text-lg font-bold text-white">Client Audit Ledger</h2>
+            <p id="drawer-client-meta" class="text-xs text-slate-300">Category • Region</p>
+          </div>
+          <button onclick="closeDrillthrough()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Drawer Body Content -->
+        <div class="p-5 flex-1 overflow-y-auto space-y-5">
+          
+          <!-- Quick Financial Summary Cards -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">Target Budget</span>
+              <div id="drawer-target-val" class="text-base font-bold text-slate-800">$0</div>
+            </div>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <span class="text-[10px] font-bold text-slate-500 uppercase">Actual Processed</span>
+              <div id="drawer-actual-val" class="text-base font-bold text-brand-navy">$0</div>
+            </div>
+          </div>
+
+          <!-- Audit Check Log -->
+          <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-shield-halved text-teal-600"></i> Automated SQL Audit Log
+            </h4>
+            <div class="text-xs text-slate-600 space-y-1 font-mono text-[11px]">
+              <div class="flex justify-between"><span>Rule 101 (Price Verification):</span> <span class="text-emerald-600 font-bold">PASSED</span></div>
+              <div class="flex justify-between"><span>Rule 102 (Tax & Duty Alignment):</span> <span class="text-emerald-600 font-bold">PASSED</span></div>
+              <div class="flex justify-between"><span>Rule 103 (Custom Ratio Log):</span> <span class="text-emerald-600 font-bold">VERIFIED</span></div>
+            </div>
+          </div>
+
+          <!-- Invoice Breakdown Item List -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Itemized Invoices</h4>
+            <div class="overflow-x-auto rounded-lg border border-slate-200">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]">
+                  <tr>
+                    <th class="py-2 px-3">Inv #</th>
+                    <th class="py-2 px-3">Date</th>
+                    <th class="py-2 px-3 text-right">Amount</th>
+                    <th class="py-2 px-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="drawer-invoices-tbody" class="divide-y divide-slate-100">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Drawer Footer -->
+        <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs">
+          <span class="text-slate-500">SQL Audit Match: <strong class="text-emerald-600">100% Validated</strong></span>
+          <button onclick="closeDrillthrough()" class="px-4 py-1.5 bg-brand-navy text-white font-semibold rounded-lg hover:bg-slate-800 transition">
+            Close Panel
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PORTFOLIO CASE STUDY MODAL -->
+  <dialog id="casestudy-modal" class="bg-transparent backdrop:bg-slate-900/60 p-4 max-w-2xl w-full">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 p-6 flex flex-col max-h-[85vh]">
+      <div class="flex justify-between items-start mb-4 border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-solid fa-file-signature text-teal-600 text-xl"></i>
+          <div>
+            <h3 class="text-lg font-bold text-brand-navy">Portfolio Case Study & Executive Brief</h3>
+            <p class="text-xs text-slate-500">Earscure / Mir's Core B2B Financial Engineering Project</p>
+          </div>
+        </div>
+        <button onclick="toggleCaseStudyModal()" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto space-y-4 text-xs text-slate-700 pr-1">
+        <div class="bg-slate-50 p-3.5 rounded-lg border border-slate-200">
+          <strong class="text-brand-navy text-sm block mb-1">Executive Summary</strong>
+          <p class="leading-relaxed">
+            This dashboard models the complete B2B wholesale revenue performance and financial reconciliation operations for <strong>Earscure / Mir's Core</strong> (Luxury Abaya & Apparel Wholesaling). It replaces fragmented WhatsApp order spreadsheets with a unified SQL data pipeline and clean Power BI presentation canvas.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-1 text-brand-coral">Core Business Problem</h4>
+          <ul class="list-disc list-inside space-y-1 text-slate-600 pl-1">
+            <li>Raw wholesale orders submitted through unstandardized manual chats and spreadsheets.</li>
+            <li>Reconciliation delays averaging 6.8 days per audit period.</li>
+            <li>Lack of real-time visibility into export market margins (GCC, Europe, North America).</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-1 text-brand-navy">Data Engineering & Solution Architecture</h4>
+          <ul class="list-disc list-inside space-y-1 text-slate-600 pl-1">
+            <li>SQL data cleaning routines created a standardized star-schema data model.</li>
+            <li>Power BI / Excel DAX measures calculated automated variance vs budget targets.</li>
+            <li>Automated reconciliation rules achieved 99.64% invoice matching accuracy.</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-1 text-emerald-600">Quantifiable Results</h4>
+          <ul class="list-disc list-inside space-y-1 text-slate-600 pl-1">
+            <li><strong>38% Reduction in Turnaround Time:</strong> Slashed order verification from 6.8 to 4.2 days.</li>
+            <li><strong>+$37.5K Favorable Budget Variance:</strong> Real-time tracking helped optimize high-margin categories.</li>
+            <li><strong>14.5 Hours/Week Saved:</strong> Fully automated reporting eliminated manual copy-paste spreadsheet tasks.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-200 flex justify-end">
+        <button onclick="toggleCaseStudyModal()" class="px-4 py-2 bg-brand-navy text-white font-semibold rounded-lg text-xs">
+          Close Window
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- GITHUB CODE MODAL -->
+  <dialog id="github-modal" class="bg-transparent backdrop:bg-slate-900/60 p-4 max-w-3xl w-full">
+    <div class="bg-white rounded-xl shadow-2xl border border-slate-200 p-6 flex flex-col max-h-[85vh]">
+      <div class="flex justify-between items-start mb-4 border-b border-slate-200 pb-3">
+        <div class="flex items-center space-x-2.5">
+          <i class="fa-brands fa-github text-brand-navy text-xl"></i>
+          <div>
+            <h3 class="text-lg font-bold text-brand-navy">Deploy Single-File HTML to GitHub Pages</h3>
+            <p class="text-xs text-slate-500">Complete, self-contained HTML application code</p>
+          </div>
+        </div>
+        <button onclick="closeGitHubModal()" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-hidden flex flex-col bg-slate-900 rounded-xl p-3">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-[11px] font-mono text-slate-400">index.html</span>
+          <button onclick="copyCode()" id="btn-copy" class="px-3 py-1 bg-teal-600 text-white hover:bg-teal-500 rounded text-xs font-semibold flex items-center gap-1 transition">
+            <i class="fa-regular fa-copy"></i> Copy Full Code
+          </button>
+        </div>
+        <textarea id="code-box" readonly class="w-full h-52 bg-transparent font-mono text-[11px] text-teal-300 focus:outline-none resize-none select-all"></textarea>
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-200 flex justify-between items-center text-xs text-slate-500">
+        <span>Publishing Tip: Save as <code>index.html</code> in your GitHub repo root and enable GitHub Pages.</span>
+        <button onclick="closeGitHubModal()" class="px-4 py-2 bg-slate-200 text-slate-700 font-semibold rounded-lg hover:bg-slate-300 transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- JAVASCRIPT MASTER DATA ENGINE & CHART INSTANCES -->
+  <script>
+    // Master Client Dataset (16 Core Accounts across Regions & Categories)
+    const masterClients = [
+      { id: "CL-101", client: "Al-Noor Luxury Dubai", category: "Royal Kaftans", region: "UAE & GCC", quarter: "Q1", target: 50000, actual: 56000, acc: 99.8, status: "Automated Matched", tat: 3.8 },
+      { id: "CL-102", client: "Harrods Modest Suite London", category: "Gold-Zari Couture", region: "UK & Europe", quarter: "Q1", target: 45000, actual: 51200, acc: 100.0, status: "Automated Matched", tat: 4.0 },
+      { id: "CL-103", client: "Zahara Collection New York", category: "Evening Robes", region: "North America", quarter: "Q2", target: 38000, actual: 41500, acc: 99.5, status: "Custom Verified", tat: 4.5 },
+      { id: "CL-104", client: "Silk & Style Riyadh", category: "Luxury Abayas", region: "UAE & GCC", quarter: "Q2", target: 42000, actual: 44800, acc: 99.9, status: "Automated Matched", tat: 3.5 },
+      { id: "CL-105", client: "Al-Huda Fabrics Doha", category: "Royal Kaftans", region: "UAE & GCC", quarter: "Q3", target: 30000, actual: 33500, acc: 99.7, status: "Automated Matched", tat: 4.1 },
+      { id: "CL-106", client: "Modest Couture Toronto", category: "Luxury Abayas", region: "North America", quarter: "Q3", target: 28000, actual: 29800, acc: 99.2, status: "Custom Verified", tat: 4.8 },
+      { id: "CL-107", client: "Mir's Flagship Lahore", category: "Luxury Abayas", region: "Pakistan Domestic", quarter: "Q1", target: 25000, actual: 27200, acc: 99.1, status: "Automated Matched", tat: 3.2 },
+      { id: "CL-108", client: "Kaftan Palace Jeddah", category: "Royal Kaftans", region: "UAE & GCC", quarter: "Q4", target: 35000, actual: 38400, acc: 100.0, status: "Automated Matched", tat: 3.9 },
+      { id: "CL-109", client: "El-Elite Fashion Kuwait", category: "Gold-Zari Couture", region: "UAE & GCC", quarter: "Q4", target: 32000, actual: 35000, acc: 99.6, status: "Custom Verified", tat: 4.3 },
+      { id: "CL-110", client: "Verona Collection Birmingham", category: "Evening Robes", region: "UK & Europe", quarter: "Q2", target: 22000, actual: 23600, acc: 99.4, status: "Automated Matched", tat: 4.2 },
+      { id: "CL-111", client: "Sultana Fashion Chicago", category: "Luxury Abayas", region: "North America", quarter: "Q3", target: 20000, actual: 21400, acc: 98.9, status: "Pending Review", tat: 5.5 },
+      { id: "CL-112", client: "Golden Thread Karachi", category: "Gold-Zari Couture", region: "Pakistan Domestic", quarter: "Q2", target: 18000, actual: 19500, acc: 99.8, status: "Automated Matched", tat: 3.4 },
+      { id: "CL-113", client: "Elegance Abu Dhabi", category: "Evening Robes", region: "UAE & GCC", quarter: "Q4", target: 24000, actual: 25800, acc: 99.9, status: "Automated Matched", tat: 3.7 },
+      { id: "CL-114", client: "Nur Al-Huda Manchester", category: "Royal Kaftans", region: "UK & Europe", quarter: "Q3", target: 16000, actual: 17200, acc: 99.3, status: "Custom Verified", tat: 4.6 },
+      { id: "CL-115", client: "Bayt Al-Abaya Muscat", category: "Luxury Abayas", region: "UAE & GCC", quarter: "Q1", target: 15000, actual: 16000, acc: 99.7, status: "Automated Matched", tat: 3.6 },
+      { id: "CL-116", client: "Dar Al-Zari Islamabad", category: "Gold-Zari Couture", region: "Pakistan Domestic", quarter: "Q4", target: 12000, actual: 13000, acc: 99.5, status: "Automated Matched", tat: 3.3 }
+    ];
+
+    // Global Sorting State
+    let currentSortCol = 'actual';
+    let currentSortAsc = false;
+
+    // Chart Instances
+    let chartTrend, chartMarkets, chartVariance, chartStatus;
+
+    // Corporate Color Tokens
+    const COLOR_NAVY = '#1B365D';
+    const COLOR_TEAL = '#008080';
+    const COLOR_TEAL_LIGHT = '#0EA5E9';
+    const COLOR_EMERALD = '#10B981';
+    const COLOR_CORAL = '#E11D48';
+    const COLOR_AMBER = '#D97706';
+    const COLOR_SLATE_BORDER = '#E2E8F0';
+
+    // Initialize Page on Load
+    window.onload = function() {
+      initCharts();
+      onSlicerChange();
+    };
+
+    // Filter Trigger
+    function onSlicerChange() {
+      const filtered = getFilteredData();
+      updateSlicerSummaryText();
+      updateKPIs(filtered);
+      updateCharts(filtered);
+      renderTable(filtered);
+    }
+
+    function getFilteredData() {
+      const dateVal = document.getElementById('slicer-date').value;
+      const regVal = document.getElementById('slicer-region').value;
+      const catVal = document.getElementById('slicer-category').value;
+
+      return masterClients.filter(item => {
+        const matchDate = (dateVal === 'all' || item.quarter === dateVal);
+        const matchReg = (regVal === 'all' || item.region === regVal);
+        const matchCat = (catVal === 'all' || item.category === catVal);
+        return matchDate && matchReg && matchCat;
+      });
+    }
+
+    function updateSlicerSummaryText() {
+      const dateVal = document.getElementById('slicer-date').value;
+      const regVal = document.getElementById('slicer-region').value;
+      const catVal = document.getElementById('slicer-category').value;
+
+      const dateText = dateVal === 'all' ? 'All Periods' : dateVal;
+      const regText = regVal === 'all' ? 'All Export Markets' : regVal;
+      const catText = catVal === 'all' ? 'All Product Categories' : catVal;
+
+      document.getElementById('slicer-summary-text').textContent = `Showing: ${dateText} • ${regText} • ${catText}`;
+    }
+
+    function resetSlicers() {
+      document.getElementById('slicer-date').value = 'all';
+      document.getElementById('slicer-region').value = 'all';
+      document.getElementById('slicer-category').value = 'all';
+      document.getElementById('table-search').value = '';
+      resetBookmarkButtons();
+      document.getElementById('bm-exec').classList.add('active');
+      onSlicerChange();
+    }
+
+    // Update KPI Numeric Cards
+    function updateKPIs(data) {
+      const totalTarget = data.reduce((sum, item) => sum + item.target, 0);
+      const totalActual = data.reduce((sum, item) => sum + item.actual, 0);
+      const variancePct = totalTarget > 0 ? ((totalActual - totalTarget) / totalTarget) * 100 : 0;
+      
+      const avgAcc = data.length > 0 ? (data.reduce((sum, item) => sum + item.acc, 0) / data.length).toFixed(2) : "100.00";
+      const avgTat = data.length > 0 ? (data.reduce((sum, item) => sum + item.tat, 0) / data.length).toFixed(1) : "0.0";
+
+      // KPI 1: Revenue
+      document.getElementById('kpi-rev-val').textContent = `$${totalActual.toLocaleString()}`;
+      document.getElementById('kpi-rev-sub').textContent = `Target Budget: $${totalTarget.toLocaleString()}`;
+      
+      const badgeElem = document.getElementById('kpi-rev-badge');
+      if (variancePct >= 0) {
+        badgeElem.className = "px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full flex items-center gap-1";
+        badgeElem.innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> +${variancePct.toFixed(1)}%`;
+      } else {
+        badgeElem.className = "px-2 py-0.5 text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 rounded-full flex items-center gap-1";
+        badgeElem.innerHTML = `<i class="fa-solid fa-arrow-trend-down"></i> ${variancePct.toFixed(1)}%`;
+      }
+
+      // KPI 2: Variance
+      const varValElem = document.getElementById('kpi-var-val');
+      const varStatusElem = document.getElementById('kpi-var-status');
+      const varBarElem = document.getElementById('kpi-var-bar');
+      const diffVal = totalActual - totalTarget;
+
+      if (variancePct >= 0) {
+        varValElem.textContent = `+${variancePct.toFixed(2)}%`;
+        varValElem.className = "text-2xl sm:text-3xl font-extrabold text-emerald-600 tracking-tight";
+        varStatusElem.textContent = "Favorable";
+        varStatusElem.className = "px-2 py-0.5 text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full";
+        document.getElementById('kpi-var-sub').textContent = `+$${Math.abs(diffVal).toLocaleString()} Above Forecast`;
+        varBarElem.className = "bg-emerald-500 h-full rounded-full";
+        varBarElem.style.width = `${Math.min(100, 50 + variancePct * 3)}%`;
+      } else {
+        varValElem.textContent = `${variancePct.toFixed(2)}%`;
+        varValElem.className = "text-2xl sm:text-3xl font-extrabold text-brand-coral tracking-tight";
+        varStatusElem.textContent = "Unfavorable";
+        varStatusElem.className = "px-2 py-0.5 text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 rounded-full";
+        document.getElementById('kpi-var-sub').textContent = `-$${Math.abs(diffVal).toLocaleString()} Below Target`;
+        varBarElem.className = "bg-brand-coral h-full rounded-full";
+        varBarElem.style.width = `${Math.max(10, 50 + variancePct * 3)}%`;
+      }
+
+      // KPI 3: Accuracy & KPI 4: Turnaround Time
+      document.getElementById('kpi-acc-val').textContent = `${avgAcc}%`;
+      document.getElementById('kpi-tat-val').textContent = `${avgTat} Days`;
+    }
+
+    // Initialize 4 Chart.js Instances
+    function initCharts() {
+      // Visual 1: Trend Line/Area
+      const ctx1 = document.getElementById('chart-trend').getContext('2d');
+      chartTrend = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          datasets: [
+            {
+              label: 'Revenue ($)',
+              data: [32000, 35000, 42000, 39000, 44000, 48000, 46000, 50000, 47000, 52000, 55000, 58000],
+              borderColor: COLOR_NAVY,
+              backgroundColor: 'rgba(27, 54, 93, 0.08)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4,
+              pointBackgroundColor: COLOR_NAVY
+            },
+            {
+              label: 'Invoices Processed',
+              data: [14, 16, 19, 17, 20, 22, 21, 24, 22, 25, 26, 28],
+              borderColor: COLOR_TEAL,
+              borderDash: [4, 4],
+              fill: false,
+              tension: 0.3,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { font: { size: 10 } } },
+            y: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { font: { size: 10 } } },
+            y1: { position: 'right', grid: { display: false }, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+
+      // Visual 2: Markets Horizontal Bar
+      const ctx2 = document.getElementById('chart-markets').getContext('2d');
+      chartMarkets = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+          labels: ['UAE & GCC', 'UK & Europe', 'North America', 'Pakistan Domestic'],
+          datasets: [{
+            label: 'Wholesale Revenue ($)',
+            data: [249500, 92000, 92700, 59700],
+            backgroundColor: [COLOR_NAVY, COLOR_TEAL, COLOR_TEAL_LIGHT, COLOR_EMERALD],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { font: { size: 10 } } },
+            y: { grid: { display: false }, ticks: { font: { size: 11, weight: 'bold' }, color: '#1F2937' } }
+          }
+        }
+      });
+
+      // Visual 3: Category Target vs Actual Combo Chart
+      const ctx3 = document.getElementById('chart-variance').getContext('2d');
+      chartVariance = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: ['Royal Kaftans', 'Gold-Zari Couture', 'Luxury Abayas', 'Evening Robes'],
+          datasets: [
+            {
+              label: 'Actual Revenue ($)',
+              data: [138700, 118700, 138400, 90900],
+              backgroundColor: COLOR_NAVY,
+              borderRadius: 5
+            },
+            {
+              label: 'Budget Target ($)',
+              data: [131000, 107000, 130000, 84000],
+              backgroundColor: '#CBD5E1',
+              borderRadius: 5
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+            y: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+
+      // Visual 4: Status Doughnut
+      const ctx4 = document.getElementById('chart-status').getContext('2d');
+      chartStatus = new Chart(ctx4, {
+        type: 'doughnut',
+        data: {
+          labels: ['Automated Matched', 'Custom Tailoring Verified', 'Pending Review'],
+          datasets: [{
+            data: [11, 4, 1],
+            backgroundColor: [COLOR_EMERALD, COLOR_TEAL, COLOR_AMBER],
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: {
+            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10 } }
+          }
+        }
+      });
+    }
+
+    // Dynamic Chart Updates based on Filtered Data
+    function updateCharts(filteredData) {
+      if (!chartMarkets) return;
+
+      // Aggregates for Markets
+      const regMap = { 'UAE & GCC': 0, 'UK & Europe': 0, 'North America': 0, 'Pakistan Domestic': 0 };
+      const catActualMap = { 'Royal Kaftans': 0, 'Gold-Zari Couture': 0, 'Luxury Abayas': 0, 'Evening Robes': 0 };
+      const catTargetMap = { 'Royal Kaftans': 0, 'Gold-Zari Couture': 0, 'Luxury Abayas': 0, 'Evening Robes': 0 };
+      const statusMap = { 'Automated Matched': 0, 'Custom Verified': 0, 'Pending Review': 0 };
+
+      filteredData.forEach(d => {
+        if (regMap[d.region] !== undefined) regMap[d.region] += d.actual;
+        if (catActualMap[d.category] !== undefined) {
+          catActualMap[d.category] += d.actual;
+          catTargetMap[d.category] += d.target;
+        }
+        if (statusMap[d.status] !== undefined) statusMap[d.status]++;
+      });
+
+      // Visual 2 Update
+      chartMarkets.data.datasets[0].data = [
+        regMap['UAE & GCC'], regMap['UK & Europe'], regMap['North America'], regMap['Pakistan Domestic']
+      ];
+      chartMarkets.update();
+
+      // Visual 3 Update
+      chartVariance.data.datasets[0].data = [
+        catActualMap['Royal Kaftans'], catActualMap['Gold-Zari Couture'], catActualMap['Luxury Abayas'], catActualMap['Evening Robes']
+      ];
+      chartVariance.data.datasets[1].data = [
+        catTargetMap['Royal Kaftans'], catTargetMap['Gold-Zari Couture'], catTargetMap['Luxury Abayas'], catTargetMap['Evening Robes']
+      ];
+      chartVariance.update();
+
+      // Visual 4 Update
+      chartStatus.data.datasets[0].data = [
+        statusMap['Automated Matched'], statusMap['Custom Verified'], statusMap['Pending Review']
+      ];
+      chartStatus.update();
+    }
+
+    // Render Matrix Detail Table
+    function renderTable(dataToRender) {
+      const data = dataToRender || getFilteredData();
+      const tbody = document.getElementById('matrix-tbody');
+      const query = document.getElementById('table-search').value.toLowerCase();
+
+      let items = data.filter(i => 
+        i.client.toLowerCase().includes(query) ||
+        i.region.toLowerCase().includes(query) ||
+        i.category.toLowerCase().includes(query) ||
+        i.status.toLowerCase().includes(query)
+      );
+
+      // Sort Items
+      items.sort((a, b) => {
+        let valA = a[currentSortCol];
+        let valB = b[currentSortCol];
+        if (currentSortCol === 'variance') {
+          valA = ((a.actual - a.target) / a.target);
+          valB = ((b.actual - b.target) / b.target);
+        }
+        if (typeof valA === 'string') {
+          return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return currentSortAsc ? valA - valB : valB - valA;
+      });
+
+      tbody.innerHTML = '';
+      if (items.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400">No client records found matching search or slicer rules.</td></tr>`;
+        return;
+      }
+
+      let aggregatedActual = 0;
+
+      items.forEach((row, idx) => {
+        aggregatedActual += row.actual;
+        const diffPct = ((row.actual - row.target) / row.target) * 100;
+        const isFavorable = diffPct >= 0;
+        
+        const varBadgeClass = isFavorable 
+          ? 'text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200' 
+          : 'text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-200';
+
+        let statusPillClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        if (row.status === 'Custom Verified') statusPillClass = 'bg-teal-50 text-teal-700 border-teal-200';
+        if (row.status === 'Pending Review') statusPillClass = 'bg-amber-50 text-amber-700 border-amber-200';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 transition cursor-pointer";
+        tr.onclick = () => openDrillthrough(row);
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-store text-teal-600 text-xs"></i>
+            <span>${row.client}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-600">${row.category}</td>
+          <td class="py-3 px-4 text-slate-600">${row.region}</td>
+          <td class="py-3 px-4 text-right font-mono text-slate-500">$${row.target.toLocaleString()}</td>
+          <td class="py-3 px-4 text-right font-mono font-bold text-brand-navy">$${row.actual.toLocaleString()}</td>
+          <td class="py-3 px-4 text-right">
+            <span class="${varBadgeClass}">${isFavorable ? '+' : ''}${diffPct.toFixed(1)}%</span>
+          </td>
+          <td class="py-3 px-4 text-center font-mono font-semibold text-slate-700">${row.acc}%</td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${statusPillClass}">${row.status}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="event.stopPropagation(); openDrillthrough('${row.id}')" class="px-2.5 py-1 text-[11px] font-semibold text-brand-navy hover:text-teal-600 bg-slate-100 hover:bg-slate-200 rounded border border-slate-300 transition">
+              <i class="fa-solid fa-magnifying-glass-chart"></i> Audit
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('tbl-count').textContent = items.length;
+      document.getElementById('tbl-total-actual').textContent = `$${aggregatedActual.toLocaleString()}`;
+    }
+
+    function sortTable(col) {
+      if (currentSortCol === col) {
+        currentSortAsc = !currentSortAsc;
+      } else {
+        currentSortCol = col;
+        currentSortAsc = false;
+      }
+      renderTable();
+    }
+
+    // Bookmark Presets Logic
+    function applyBookmark(type) {
+      resetBookmarkButtons();
+      resetSlicers();
+
+      if (type === 'exec') {
+        document.getElementById('bm-exec').classList.add('active');
+      } else if (type === 'variance') {
+        document.getElementById('bm-variance').classList.add('active');
+        document.getElementById('slicer-category').value = 'Gold-Zari Couture';
+      } else if (type === 'fulfillment') {
+        document.getElementById('bm-fulfillment').classList.add('active');
+        document.getElementById('slicer-region').value = 'UAE & GCC';
+      }
+      onSlicerChange();
+    }
+
+    function resetBookmarkButtons() {
+      document.querySelectorAll('.bookmark-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    // Drill-Through Slide-Over Drawer
+    function openDrillthrough(itemOrId) {
+      let item = itemOrId;
+      if (typeof itemOrId === 'string') {
+        item = masterClients.find(c => c.id === itemOrId);
+      }
+      if (!item) return;
+
+      document.getElementById('drawer-client-name').textContent = item.client;
+      document.getElementById('drawer-client-meta').textContent = `${item.category} • ${item.region} • ${item.quarter}`;
+      document.getElementById('drawer-target-val').textContent = `$${item.target.toLocaleString()}`;
+      document.getElementById('drawer-actual-val').textContent = `$${item.actual.toLocaleString()}`;
+
+      // Populate Mock Invoices
+      const invBody = document.getElementById('drawer-invoices-tbody');
+      invBody.innerHTML = `
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-mono font-bold text-brand-navy">INV-2026-081</td>
+          <td class="py-2 px-3 text-slate-500">2026-02-14</td>
+          <td class="py-2 px-3 text-right font-mono font-bold">$${Math.round(item.actual * 0.6).toLocaleString()}</td>
+          <td class="py-2 px-3 text-center"><span class="px-1.5 py-0.5 text-[9px] bg-emerald-50 text-emerald-700 rounded font-semibold">Matched</span></td>
+        </tr>
+        <tr class="hover:bg-slate-50">
+          <td class="py-2 px-3 font-mono font-bold text-brand-navy">INV-2026-114</td>
+          <td class="py-2 px-3 text-slate-500">2026-03-01</td>
+          <td class="py-2 px-3 text-right font-mono font-bold">$${Math.round(item.actual * 0.4).toLocaleString()}</td>
+          <td class="py-2 px-3 text-center"><span class="px-1.5 py-0.5 text-[9px] bg-emerald-50 text-emerald-700 rounded font-semibold">Matched</span></td>
+        </tr>
+      `;
+
+      document.getElementById('drillthrough-drawer').classList.remove('hidden');
+    }
+
+    function closeDrillthrough() {
+      document.getElementById('drillthrough-drawer').classList.add('hidden');
+    }
+
+    // Modal Triggers
+    function toggleCaseStudyModal() {
+      const m = document.getElementById('casestudy-modal');
+      m.open ? m.close() : m.showModal();
+    }
+
+    function openGitHubModal() {
+      const modal = document.getElementById('github-modal');
+      document.getElementById('code-box').value = document.documentElement.outerHTML;
+      modal.showModal();
+    }
+
+    function closeGitHubModal() {
+      document.getElementById('github-modal').close();
+    }
+
+    function copyCode() {
+      const box = document.getElementById('code-box');
+      box.select();
+      document.execCommand('copy');
+      
+      const btn = document.getElementById('btn-copy');
+      btn.innerHTML = `<i class="fa-solid fa-check"></i> Code Copied!`;
+      setTimeout(() => {
+        btn.innerHTML = `<i class="fa-regular fa-copy"></i> Copy Full Code`;
+      }, 2500);
+    }
+
+    // CSV Export
+    function exportCSV() {
+      const data = getFilteredData();
+      let csv = "Client ID,Boutique Partner,Category,Region,Quarter,Budget Target,Actual Revenue,Variance Pct,Accuracy Pct,Status,Turnaround Days\n";
+      data.forEach(d => {
+        const vPct = (((d.actual - d.target) / d.target) * 100).toFixed(2);
+        csv += `"${d.id}","${d.client}","${d.category}","${d.region}","${d.quarter}",${d.target},${d.actual},${vPct},${d.acc},"${d.status}",${d.tat}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Earscure_MirsCore_Financial_Audit_Ledger.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
